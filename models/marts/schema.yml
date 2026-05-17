@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: dim_clientes
+    description: "Tabela de dimensão contendo os dados dos clientes e lojas."
+    columns:
+      - name: sk_cliente
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_produtos
+    description: "Tabela de dimensão contendo os produtos vendidos."
+    columns:
+      - name: sk_produto
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_localidade
+    description: "Tabela de dimensão contendo dados sobre localidade da venda."
+    columns:
+      - name: sk_localidade
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_cartoes
+    description: "Tabela de dimensão contendo os cartões e seus tipos."
+    columns:
+      - name: sk_cartao
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_motivos_venda
+    description: "Tabela de dimensão contendo os motivos de venda."
+    columns:
+      - name: sk_motivo_venda
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_datas
+    description: "Tabela de dimensão contendo as datas desde o primeiro pedido até o último."
+    columns:
+      - name: sk_data
+        tests:
+          - unique
+          - not_null
+
+  - name: fato_vendas
+    description: "Tabela de fatos com os detalhes e valores de cada item do pedido."
+    columns:
+      - name: sk_venda
+        description: "Chave primária da tabela fato (item do pedido + motivo)."
+        tests:
+          - unique
+          - not_null
+      - name: valor_bruto
+        description: "Valor total bruto calculado (quantidade * preco unitario)."
