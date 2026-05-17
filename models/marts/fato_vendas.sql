@@ -7,8 +7,19 @@ with
         select * from {{ ref('stg_adventure_works__sales_salesorderdetail') }}
     ),
 
+    -- Desduplicando os motivos: pegamos apenas o 1º motivo associado a cada pedido
     stg_ponte_motivo as (
-        select * from {{ ref('stg_adventure_works__sales_salesorderheadersalesreason') }}
+        select 
+            id_pedido, 
+            id_motivo_venda
+        from (
+            select 
+                id_pedido, 
+                id_motivo_venda,
+                row_number() over(partition by id_pedido order by id_motivo_venda) as rn
+            from {{ ref('stg_adventure_works__sales_salesorderheadersalesreason') }}
+        ) sub
+        where rn = 1
     ),
 
     joined as (
