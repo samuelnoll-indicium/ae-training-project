@@ -8,6 +8,7 @@ with
             countryregioncode as codigo_pais,
             name as nome_pais
         from source
+        where countryregioncode is not null
     )
 
 select *
