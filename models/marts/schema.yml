@@ -1,61 +1,89 @@
-version: 2
-
 models:
   - name: dim_clientes
-    description: "Tabela de dimensão contendo os dados dos clientes e lojas."
+    description: "Tabela de dimensão contendo os dados cadastrais dos clientes e corporações."
     columns:
       - name: sk_cliente
+        description: "Chave substituta (Surrogate Key) única do cliente, gerada via hash MD5."
         tests:
           - unique
           - not_null
+      - name: nome_cliente
+        description: "Nome completo do cliente ou a razão social da loja/corporação."
 
   - name: dim_produtos
-    description: "Tabela de dimensão contendo os produtos vendidos."
+    description: "Tabela de dimensão contendo a lista de produtos distintos vendidos pela Adventure Works."
     columns:
       - name: sk_produto
+        description: "Chave substituta única do produto, gerada via hash MD5."
         tests:
           - unique
           - not_null
-
-  - name: dim_localidade
-    description: "Tabela de dimensão contendo dados sobre localidade da venda."
-    columns:
-      - name: sk_localidade
-        tests:
-          - unique
-          - not_null
+      - name: nome_produto
+        description: "Nome comercial do produto."
 
   - name: dim_cartoes
-    description: "Tabela de dimensão contendo os cartões e seus tipos."
+    description: "Tabela de dimensão contendo as bandeiras e tipos de cartões de crédito utilizados nas vendas."
     columns:
       - name: sk_cartao
+        description: "Chave substituta única do cartão, gerada via hash MD5."
         tests:
           - unique
           - not_null
+      - name: tipo_cartao
+        description: "Bandeira/tipo do cartão de crédito (ex: Vista, SuperiorCard)."
+
+  - name: dim_localidades
+    description: "Tabela de dimensão desnormalizada com os dados geográficos de entrega (Cidade, Estado e País)."
+    columns:
+      - name: sk_localidade
+        description: "Chave substituta única da localidade, gerada via hash MD5 do ID do endereço."
+        tests:
+          - unique
+          - not_null
+      - name: cidade
+        description: "Nome da cidade de entrega."
+      - name: estado
+        description: "Nome do estado ou província."
+      - name: pais
+        description: "Nome do país correspondente."
 
   - name: dim_motivos_venda
-    description: "Tabela de dimensão contendo os motivos de venda."
+    description: "Tabela de dimensão contendo os motivos pelos quais as vendas foram realizadas."
     columns:
       - name: sk_motivo_venda
+        description: "Chave substituta única do motivo de venda, gerada via hash MD5."
         tests:
           - unique
           - not_null
+      - name: nome_motivo
+        description: "Nome do motivo da venda (ex: On Promotion, Television Advertisement)."
 
   - name: dim_datas
-    description: "Tabela de dimensão contendo as datas desde o primeiro pedido até o último."
+    description: "Tabela de dimensão de tempo (calendário) gerada dinamicamente para análises temporais completas."
     columns:
       - name: sk_data
+        description: "Chave inteligente da data no formato texto (YYYY-MM-DD)."
         tests:
           - unique
           - not_null
+      - name: data
+        description: "Data pura no tipo DATE."
 
   - name: fato_vendas
-    description: "Tabela de fatos com os detalhes e valores de cada item do pedido."
+    description: "Tabela fato central contendo as métricas financeiras e volumétricas de cada item de pedido vendido."
     columns:
       - name: sk_venda
-        description: "Chave primária da tabela fato (item do pedido + motivo)."
+        description: "Chave primária composta e única para cada linha da fato (item do detalhe + motivo desduplicado)."
         tests:
           - unique
           - not_null
+      - name: id_pedido
+        description: "ID original do pedido de venda (útil para contagem distinta de pedidos)."
+      - name: quantidade_comprada
+        description: "Quantidade de unidades compradas daquele produto específico na linha do pedido."
       - name: valor_bruto
-        description: "Valor total bruto calculado (quantidade * preco unitario)."
+        description: "Faturamento bruto calculado para a linha (Quantidade * Preço Unitário)."
+      - name: valor_liquido
+        description: "Faturamento líquido calculado após a aplicação do percentual de desconto."
+      - name: desconto
+        description: "Valor total em dinheiro concedido como desconto na linha do pedido."
